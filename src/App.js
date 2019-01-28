@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { withAuthenticator } from 'aws-amplify-react';
 import OnlineList from './components/OnlineList';
-
 class App extends Component {
   render() {
     return (
@@ -11,4 +10,4 @@ class App extends Component {
     );
   }
 }
-export default withAuthenticator(App);
+export default withAuthenticator(App,true);

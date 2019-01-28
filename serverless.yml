@@ -26,20 +26,13 @@ provider:
   region: ap-southeast-1
 
 # you can add statements to the Lambda function's IAM Role here
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:PutObject"
-#      Resource:
-#        Fn::Join:
-#          - ""
-#          - - "arn:aws:s3:::"
-#            - "Ref" : "ServerlessDeploymentBucket"
-#            - "/*"
+# iamRoleStatements:
+#   - Effect: "Allow"
+#     Action:
+#       - "ec2:DescribeSecurityGroups"
+#       - "ec2:DescribeSubnets"
+#       - "ec2:DescribeVpcs"
+#     Resource: "*"
 
 # you can define service wide environment variables here
 #  environment:
@@ -54,8 +47,19 @@ package:
     - node_modules/**
 
 functions:
-  hello:
-    handler: handler.hello
+  onlineList:
+    handler: functions/onlineList/index.handler
+    events:
+      - http:
+          path: online
+          method: get
+          cors: true
+          integration: lambda
+          authorizer:
+            name: authorizer
+            arn: arn:aws:cognito-idp:ap-southeast-1:435044949037:userpool/ap-southeast-1_7wI7enAk7
+            claims:
+              - "cognito:username"  
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

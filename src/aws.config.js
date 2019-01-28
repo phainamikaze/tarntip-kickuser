@@ -1,12 +1,12 @@
 export default {
 	apiGateway: {
-		REGION: 'YOUR_API_GATEWAY_REGION',
-		URL: 'YOUR_API_GATEWAY_URL'
+		REGION: 'ap-southeast-1',
+		URL: 'https://22naxwzali.execute-api.ap-southeast-1.amazonaws.com/prod'
 	},
 	cognito: {
-		REGION: 'YOUR_COGNITO_REGION',
-		USER_POOL_ID: 'YOUR_COGNITO_USER_POOL_ID',
-		APP_CLIENT_ID: 'YOUR_COGNITO_APP_CLIENT_ID',
+		REGION: 'ap-southeast-1',
+		USER_POOL_ID: 'ap-southeast-1_7wI7enAk7',
+		APP_CLIENT_ID: '1dm4vp72g0ivana74f1sjjrhok',
 		IDENTITY_POOL_ID: 'YOUR_IDENTITY_POOL_ID'
 	}
 };
