@@ -35,8 +35,11 @@ provider:
 #     Resource: "*"
 
 # you can define service wide environment variables here
-#  environment:
-#    variable1: value1
+  environment:
+    DBHOST: ${ssm:WEBRADIUSNEW_DBHOST}
+    DBUSER: ${ssm:WEBRADIUSNEW_DBUSER}
+    DBPASS: ${ssm:WEBRADIUSNEW_DBPASS}
+    DBNAME: ${ssm:WEBRADIUSNEW_DBNAME}
 
 # you can add packaging information here
 package:
@@ -46,6 +49,10 @@ package:
     - build/**
     - node_modules/**
 
+layers:
+  Mysql:
+    path: layers/mysql
+
 functions:
   onlineList:
     handler: functions/onlineList/index.handler
@@ -54,46 +61,33 @@ functions:
           path: online
           method: get
           cors: true
-          integration: lambda
           authorizer:
             name: authorizer
             arn: arn:aws:cognito-idp:ap-southeast-1:435044949037:userpool/ap-southeast-1_7wI7enAk7
-            claims:
-              - "cognito:username"  
-
-#    The following are a few example events you can configure
-#    NOTE: Please make sure to change your handler code to work with those events
-#    Check the event documentation for details
-#    events:
-#      - http:
-#          path: users/create
-#          method: get
-#      - s3: ${env:BUCKET}
-#      - schedule: rate(10 minutes)
-#      - sns: greeter-topic
-#      - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
-#      - alexaSkill: amzn1.ask.skill.xx-xx-xx-xx
-#      - alexaSmartHome: amzn1.ask.skill.xx-xx-xx-xx
-#      - iot:
-#          sql: "SELECT * FROM 'some_topic'"
-#      - cloudwatchEvent:
-#          event:
-#            source:
-#              - "aws.ec2"
-#            detail-type:
-#              - "EC2 Instance State-change Notification"
-#            detail:
-#              state:
-#                - pending
-#      - cloudwatchLog: '/aws/lambda/hello'
-#      - cognitoUserPool:
-#          pool: MyUserPool
-#          trigger: PreSignUp
-
-#    Define function environment variables here
-#    environment:
-#      variable2: value2
-
+    layers:
+      - {Ref: MysqlLambdaLayer}
+    environment:
+      DBHOST: ${self:provider.environment.DBHOST}
+      DBUSER: ${self:provider.environment.DBUSER}
+      DBPASS: ${self:provider.environment.DBPASS}
+      DBNAME: ${self:provider.environment.DBNAME}
+  kickUser:
+    handler: functions/kickUser/index.handler
+    events:
+      - http:
+          path: online
+          method: post
+          cors: true
+          authorizer:
+            name: authorizer
+            arn: arn:aws:cognito-idp:ap-southeast-1:435044949037:userpool/ap-southeast-1_7wI7enAk7
+    layers:
+      - {Ref: MysqlLambdaLayer}
+    environment:
+      DBHOST: ${self:provider.environment.DBHOST}
+      DBUSER: ${self:provider.environment.DBUSER}
+      DBPASS: ${self:provider.environment.DBPASS}
+      DBNAME: ${self:provider.environment.DBNAME}
 # you can add CloudFormation resource templates here
 resources:
   Resources:
@@ -143,3 +137,9 @@ resources:
         - StaticWebHosting
         - WebsiteURL
       Description: URL for website hosted on S3
+custom:
+  serverless-offline:
+    port: 4000
+
+plugins:
+  - serverless-offline
