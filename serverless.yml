@@ -95,6 +95,7 @@ resources:
     StaticWebHosting:
       Type: AWS::S3::Bucket
       Properties:
+        BucketName: kickuser.mikrotikeasy.com
         AccessControl: PublicRead
         WebsiteConfiguration:
           IndexDocument: index.html
